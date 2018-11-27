@@ -1,0 +1,24 @@
+.record-list-con .record-item {
+  background-color: #fff;
+  margin-top: 20px;
+  border: 1px solid #ccc;
+  text-align: left;
+}
+.record-list-con .record-item .record-item-header {
+  height: 30px;
+  padding: 5px 20px;
+  border-bottom: 1px solid #eee;
+}
+.record-list-con .record-item .record-item-content {
+  padding: 5px 20px;
+}
+.record-list-con .record-item .record-item-content p {
+  line-height: 15px;
+}
+.record-list-con .record-item .record-item-footer {
+  padding: 5px 20px;
+  border-top: 1px solid #eee;
+}
+.status_cls {
+  float: right;
+}

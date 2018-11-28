@@ -4,15 +4,33 @@ import { connect } from "react-redux";
 import { firestoreConnect } from "react-redux-firebase";
 import { compose } from "redux";
 import { Redirect } from "react-router-dom";
+import Notifications from '../notifications'
+import { updateReimburseStatus } from "../../../store/action/reimburseActions";
 class RecordList extends Component {
+  handleStatusUpdate =  (event) => {
+  
+    console.log(event.target.value);
+    console.log(event.target.id);
+    const update_val = {
+      status:event.target.value,
+      id: event.target.id
+    }
+    this.props.updateReimburseStatus(update_val);
+}
   render() {
+    
     console.log("props", this.props);
-    const { reimburse, auth } = this.props;
+    const { reimburse, auth,notifications, profile } = this.props;
     if (!auth.uid) {
       return <Redirect to="/signin" />;
     }
+    
     return (
-      <div className="container section project-details">
+      <div className="dashboard container">
+        <div className="row">
+          <div className="col s12 m8">
+            
+      <div className=" section project-details">
         <ul className="record-list-con">
           {reimburse &&
             reimburse.map((item, index) => {
@@ -22,11 +40,22 @@ class RecordList extends Component {
                   "Please allow 3-4 business days for the request been reviewed.";
               } else if (item.status === "Under Review") {
                 bottom_msg = "Your reinburse request is under reviewing.";
-              } else if (item.status === "Confirmed") {
+              } else if (item.status === "Confirm") {
                 bottom_msg = "Your request is approved.";
               } else {
                 bottom_msg = "Your request is denied.";
               }
+              let status_msg='';
+              if(profile.type==='admin'){
+                status_msg=<select value={item.status} id={item.id} onChange={this.handleStatusUpdate} style={{display:"inlineBlock"}}>
+                <option  value="New">New</option>
+                <option value="Confirm">Confirm</option>
+                <option value="Under Review">Under Review</option>
+                <option value="Deny">Deny</option></select>
+              }else{
+                status_msg = item.status
+              }
+
               const date_time = new Date(item.createAt.seconds * 1000);
               var months = [
                 "Jan",
@@ -45,15 +74,19 @@ class RecordList extends Component {
               var year = date_time.getFullYear();
               var month = months[date_time.getMonth()];
               var date = date_time.getDate();
-              // console.log(item.createAt.seconds);
-              // console.log(date);
+              
               return (
                 <li className="record-item" key={index}>
                   <section className="record-item-header">
-                    <span>Submit at：{month + " " + date + ", " + year}</span>
-                    <span className="status_cls">{item.status}</span>
+                    <div>Submit at：{month + " " + date + ", " + year}</div>
+                    
+                    <span className="status_cls">{status_msg}</span>
                   </section>
                   <section className="record-item-content">
+                  <p>
+                      <span>Id: </span>&emsp;
+                      {item.id}
+                    </p>
                     <p>
                       <span>User: </span>&emsp;
                       {item.submitFirstName + " " + item.submitLastName}
@@ -72,6 +105,13 @@ class RecordList extends Component {
             })}
         </ul>
       </div>
+      
+      </div>
+          <div className="col s12 m3 offset-m1">
+            <Notifications notifications={notifications} />
+          </div>
+        </div>
+      </div>
     );
   }
 }
@@ -80,10 +120,17 @@ const mapStateToProps = state => {
   return {
     // reimburse: state.reimburse.reimburse
     reimburse: state.firestore.ordered.reimburseRequests,
-    auth: state.firebase.auth
+    auth: state.firebase.auth,
+    notifications: state.firestore.ordered.notifications,
+    profile: state.firebase.profile
   };
 };
+const mapDispatchToProps = dispatch =>{
+  return {
+    updateReimburseStatus: reimburse => dispatch(updateReimburseStatus(reimburse))
+  };
+}
 export default compose(
-  connect(mapStateToProps),
-  firestoreConnect([{ collection: "reimburseRequests" }])
+  connect(mapStateToProps,mapDispatchToProps),
+  firestoreConnect([{ collection: "reimburseRequests",orderBy:['createAt','desc'] },{ collection: 'notifications', limit: 5, orderBy:['time','desc']}])
 )(RecordList);

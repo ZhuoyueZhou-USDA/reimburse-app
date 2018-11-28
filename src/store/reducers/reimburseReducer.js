@@ -9,6 +9,8 @@ const reimburseReducer = (state = initState, action) => {
     case "CREATE_REIMBURSE_ERR":
       console.log("Creating reimbursement err", action.err);
       return state;
+    case "UPDATE_REIMBURSE":
+    return state;
     default:
       return state;
   }

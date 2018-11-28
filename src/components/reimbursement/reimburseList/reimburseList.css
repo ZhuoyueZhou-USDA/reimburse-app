@@ -5,9 +5,14 @@
   text-align: left;
 }
 .record-list-con .record-item .record-item-header {
-  height: 30px;
+ 
   padding: 5px 20px;
   border-bottom: 1px solid #eee;
+}
+.record-list-con .record-item .record-item-header div{
+  height: 3rem;
+  padding: 10px 20px;
+  display: inline-block;
 }
 .record-list-con .record-item .record-item-content {
   padding: 5px 20px;
@@ -21,4 +26,8 @@
 }
 .status_cls {
   float: right;
+}
+select{
+  display:inline-block!important;
+  width:100px!important;
 }
